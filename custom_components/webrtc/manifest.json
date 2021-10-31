@@ -5,7 +5,7 @@
   "documentation": "https://github.com/AlexxIT/WebRTC",
   "issue_tracker": "https://github.com/AlexxIT/WebRTC/issues",
   "codeowners": ["@AlexxIT"],
-  "dependencies": ["http", "lovelace"],
+  "dependencies": ["http", "lovelace", "camera", "nest"],
   "requirements": [],
   "version": "v2.0.2",
   "iot_class": "calculated"

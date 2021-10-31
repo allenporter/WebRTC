@@ -44,14 +44,6 @@ def get_arch() -> Optional[str]:
     return None
 
 
-def get_binary_name(version: str) -> str:
-    return f"rtsp2webrtc_{version}_{get_arch()}"
-
-
-def get_binary_url(version: str) -> str:
-    return "https://github.com/AlexxIT/RTSPtoWebRTC/releases/download/" \
-           f"{version}/rtsp2webrtc_{get_arch()}"
-
 
 # noinspection PyTypeChecker
 async def get_stream_source(hass: HomeAssistantType, entity: str) -> str:
@@ -140,54 +132,3 @@ def dash_cast(hass: HomeAssistantType, cast_entities: list, url: str):
     except:
         _LOGGER.exception(f"Can't DashCast to {cast_entities}")
 
-
-class Server(Thread):
-    filepath = None
-    port = 8083
-
-    def __init__(self, options: dict):
-        super().__init__(name=DOMAIN, daemon=True)
-        self.process = None
-        self.config = {
-            'ice_servers': ['stun:stun.l.google.com:19302']
-        }
-        if options.get('udp_min', 0) or options.get('udp_max', 0):
-            self.config['webrtc_port_min'] = options['udp_min']
-            self.config['webrtc_port_max'] = options['udp_max']
-
-    @property
-    def available(self):
-        return self.process.poll() is None if self.process else False
-
-    def run(self):
-        while self.config:
-            arg = json.dumps({
-                'server': {
-                    'http_port': f"localhost:{self.port}",
-                    **self.config
-                },
-                'streams': {}
-            }, separators=(',', ':'))
-
-            self.process = subprocess.Popen(
-                [self.filepath, arg],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT
-            )
-
-            # check alive
-            while self.process.poll() is None:
-                line = self.process.stdout.readline()
-                if line == b'':
-                    break
-                _LOGGER.debug(line[:-1].decode())
-
-            # increase port number on each next try
-            self.port += 1
-            if self.port > 10000:
-                _LOGGER.exception("Can't run WebRTC server")
-                break
-
-    def stop(self, *args):
-        self.config = None
-        self.process.terminate()
