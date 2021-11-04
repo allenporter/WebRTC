@@ -104,7 +104,7 @@ class WebRtcCamera(Camera):
 
     async def async_handle_web_rtc_offer(self, offer_sdp: str) -> str:  #str | None:
         stream_source = await self.stream_source()
-        query = urlencode({'url': stream_source})
+        query = urlencode({'url': stream_source, "debug": "1"})
         url = f"{SERVER_URL}/ws?{query}"
         _LOGGER.info(f"offer: {offer_sdp}")
         _LOGGER.info(f"Connecting to {url}")
