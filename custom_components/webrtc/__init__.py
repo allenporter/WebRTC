@@ -35,16 +35,6 @@ PLATFORMS = ["camera"]
 
 BINARY_VERSION = 'v5'
 
-CREATE_LINK_SCHEMA = vol.Schema(
-    {
-        vol.Required('link_id'): cv.string,
-        vol.Exclusive('url', 'url'): cv.string,
-        vol.Exclusive('entity', 'url'): cv.entity_id,
-        vol.Optional('open_limit', default=1): cv.positive_int,
-        vol.Optional('time_to_live', default=60): cv.positive_int,
-    },
-    required=True,
-)
 
 DASH_CAST_SCHEMA = vol.Schema(
     {
@@ -61,39 +51,7 @@ SERVER_URL = "https://rtsp-to-webrtc.dev.mrv.thebends.org/"
 
 
 async def async_setup(hass: HomeAssistantType, config: ConfigType):
-    # serve lovelace card
-    async def create_link(call: ServiceCallType):
-        link_id = call.data['link_id']
-        ttl = call.data['time_to_live']
-        LINKS[link_id] = {
-            'url': call.data.get('url'),
-            'entity': call.data.get('entity'),
-            'limit': call.data['open_limit'],
-            'ts': time.time() + ttl if ttl else 0
-        }
-
-    async def dash_cast(call: ServiceCallType):
-        link_id = uuid.uuid4().hex
-        LINKS[link_id] = {
-            'url': call.data.get('url'),
-            'entity': call.data.get('entity'),
-            'limit': 1,  # 1 attempt
-            'ts': time.time() + 30  # for 30 seconds
-        }
-
-        await hass.async_add_executor_job(
-            utils.dash_cast, hass,
-            call.data[ATTR_ENTITY_ID],
-            f"{get_url(hass)}/webrtc/embed?url={link_id}"
-        )
-
-    hass.services.async_register(DOMAIN, 'create_link', create_link,
-                                 CREATE_LINK_SCHEMA)
-    hass.services.async_register(DOMAIN, 'dash_cast', dash_cast,
-                                 DASH_CAST_SCHEMA)
-
     return True
-
 
 async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
     # add options handler
