@@ -26,9 +26,6 @@ from homeassistant.helpers.typing import HomeAssistantType, ConfigType, \
 from homeassistant.helpers.entity import DeviceInfo
 
 
-from . import utils
-from .utils import DOMAIN
-
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = ["camera"]
@@ -46,8 +43,6 @@ DASH_CAST_SCHEMA = vol.Schema(
 )
 
 LINKS = {}  # 2 3 4
-
-SERVER_URL = "https://rtsp-to-webrtc.dev.mrv.thebends.org/"
 
 
 async def async_setup(hass: HomeAssistantType, config: ConfigType):

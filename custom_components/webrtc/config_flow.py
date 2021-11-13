@@ -4,18 +4,10 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigFlow, OptionsFlow, ConfigEntry
 from homeassistant.core import callback
 
-from . import DOMAIN, utils
-
-
-class FlowHandler(ConfigFlow, domain=DOMAIN):
+class FlowHandler(ConfigFlow, domain="webrtc"):
 
     async def async_step_user(self, user_input=None):
-        if utils.get_arch():
-            return self.async_create_entry(title="WebRTC Camera", data={})
-
-        return self.async_abort(reason='arch', description_placeholders={
-            'uname': str(platform.uname())
-        })
+        return self.async_create_entry(title="WebRTC Camera", data={})
 
     @staticmethod
     @callback

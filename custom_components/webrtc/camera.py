@@ -28,9 +28,6 @@ from homeassistant.helpers.typing import HomeAssistantType, ConfigType, \
 from homeassistant.helpers.entity import DeviceInfo
 
 
-from . import utils
-from .utils import DOMAIN
-
 _LOGGER = logging.getLogger(__name__)
 
 SERVER_URL = "https://rtsp-to-webrtc.dev.mrv.thebends.org"
